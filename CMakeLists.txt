@@ -9,6 +9,11 @@ if( NOT CMAKE_BUILD_TYPE )
 		FORCE )
 endif( NOT CMAKE_BUILD_TYPE )
 
+option( BUILD_QGIFLIB_TESTS "Build tests? Default ON." ON )
+
 add_subdirectory( 3rdparty/giflib )
 add_subdirectory( src )
-add_subdirectory( test )
+
+if( BUILD_QGIFLIB_TESTS )
+	add_subdirectory( test )
+endif()
