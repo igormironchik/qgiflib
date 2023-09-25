@@ -65,6 +65,9 @@ public:
 		//! Index of the requested frame (indexing starts with 0).
 		qsizetype idx ) const;
 
+	//! \return File names of frames.
+	QStringList fileNames() const;
+
 	//! Write GIF from sequence of PNG files.
 	static bool write(
 		//! Output file name.
@@ -72,7 +75,9 @@ public:
 		//! Sequence of PNG file names.
 		const QStringList & pngFileNames,
 		//! Sequence of delays in milliseconds.
-		const QVector< int > & delays );
+		const QVector< int > & delays,
+		//! Animation loop count, 0 means infinite.
+		unsigned int loopCount );
 
 	//! Clean internals.
 	void clean();
@@ -80,6 +85,9 @@ public:
 private:
 	bool closeHandleWithError( GifFileType * handle );
 	bool closeHandle( GifFileType * handle );
+
+	static bool closeEHandleWithError( GifFileType * handle );
+	static bool closeEHandle( GifFileType * handle );
 
 private:
 	qsizetype framesCount = 0;

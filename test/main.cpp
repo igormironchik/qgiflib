@@ -41,7 +41,11 @@ int main( int argc, char ** argv )
 	QApplication app( argc, argv );
 
 	QGifLib::Gif gif;
-	gif.load( "1.gif" );
+	gif.load( "happy.gif" );
+
+	QVector< int > delays( gif.count(), gif.delay( 0 ) );
+
+	QGifLib::Gif::write( "out.gif", gif.fileNames(), delays, 0 );
 
 	QLabel l;
 	l.resize( gif.at( 0 ).size() );
@@ -50,13 +54,6 @@ int main( int argc, char ** argv )
 
 	QTimer t;
 	t.setInterval( gif.delay( 0 ) );
-
-//	{
-//		QImage i( "test.png" );
-//		i.setColorCount( 256 );
-//		i.convertTo( QImage::Format_Indexed8, Qt::ThresholdDither | Qt::NoOpaqueDetection );
-//		i.save( "test_c.png" );
-//	}
 
 	QObject::connect( &t, &QTimer::timeout,
 		[&]()
