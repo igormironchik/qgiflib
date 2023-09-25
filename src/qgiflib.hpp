@@ -33,6 +33,10 @@
 // Qt include.
 #include <QString>
 #include <QImage>
+#include <QTemporaryDir>
+
+// giflib include.
+#include <gif_lib.h>
 
 
 namespace QGifLib {
@@ -52,6 +56,8 @@ public:
 	bool load(
 		//! Input file name.
 		const QString & fileName );
+	//! \return Delay interval in millseconds.
+	int delay( qsizetype idx ) const;
 	//! \return Count of frames.
 	qsizetype count() const;
 	//! \return Frame with given index (starting at 0).
@@ -69,6 +75,18 @@ public:
 		int delay,
 		//! Loop animated GIF forever?
 		bool loop );
+
+	//! Clean internals.
+	void clean();
+
+private:
+	bool closeHandleWithError( GifFileType * handle );
+	bool closeHandle( GifFileType * handle );
+
+private:
+	qsizetype framesCount = 0;
+	QTemporaryDir dir = QTemporaryDir( "./" );
+	QVector< int > delays;
 }; // class Gif
 
 } /* namespace QGifLib */

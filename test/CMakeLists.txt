@@ -7,7 +7,7 @@ if( NOT CMAKE_BUILD_TYPE )
 		FORCE)
 endif( NOT CMAKE_BUILD_TYPE )
 
-project( qgiflib )
+project( qgiflib-test )
 
 set( CMAKE_CXX_STANDARD 17 )
 
@@ -17,10 +17,11 @@ set( CMAKE_AUTOMOC ON )
 set( CMAKE_AUTORCC ON )
 set( CMAKE_AUTOUIC ON )
 
-find_package( Qt6 REQUIRED COMPONENTS Core Gui )
+find_package( Qt6 REQUIRED COMPONENTS Core Gui Widgets )
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/giflib )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src
+	${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/giflib )
 
-add_library( qgiflib qgiflib.hpp qgiflib.cpp )
+add_executable( qgiflib-test main.cpp )
 
-target_link_libraries( qgiflib giflib Qt6::Gui Qt6::Core )
+target_link_libraries( qgiflib-test qgiflib giflib Qt6::Widgets Qt6::Gui Qt6::Core )

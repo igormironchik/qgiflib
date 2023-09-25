@@ -11,3 +11,4 @@ endif( NOT CMAKE_BUILD_TYPE )
 
 add_subdirectory( 3rdparty/giflib )
 add_subdirectory( src )
+add_subdirectory( test )
