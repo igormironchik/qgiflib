@@ -71,10 +71,8 @@ public:
 		const QString & fileName,
 		//! Sequence of PNG file names.
 		const QStringList & pngFileNames,
-		//! Frames delay in milliseconds.
-		int delay,
-		//! Loop animated GIF forever?
-		bool loop );
+		//! Sequence of delays in milliseconds.
+		const QVector< int > & delays );
 
 	//! Clean internals.
 	void clean();

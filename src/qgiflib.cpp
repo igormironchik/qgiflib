@@ -242,9 +242,10 @@ Gif::at( qsizetype idx ) const
 bool
 Gif::write( const QString & fileName,
 	const QStringList & pngFileNames,
-	int delay,
-	bool loop )
+	const QVector< int > & delays )
 {
+	Q_ASSERT( pngFileNames.size() == delays.size() );
+
 	return true;
 }
 
