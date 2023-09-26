@@ -605,9 +605,10 @@ Gif::write( const QString & fileName,
 			if( !addFrame( handle, key, key.rect(), delays.at( 0 ), resources ) )
 				return closeEHandleWithError( handle );
 
+			int delta = 0;
+
 			for( qsizetype i = 1; i < pngFileNames.size(); ++i )
 			{
-				int delta = 0;
 				bool result = false;
 
 				std::tie( result, delta ) = addFrame( handle, key,
