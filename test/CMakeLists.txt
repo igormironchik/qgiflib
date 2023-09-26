@@ -24,4 +24,4 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src
 
 add_executable( qgiflib-test main.cpp )
 
-target_link_libraries( qgiflib-test qgiflib giflib Qt6::Widgets Qt6::Gui Qt6::Core )
+target_link_libraries( qgiflib-test qgiflib Qt6::Widgets Qt6::Gui Qt6::Core )

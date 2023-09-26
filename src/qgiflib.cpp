@@ -38,6 +38,9 @@
 // Qt include.
 #include <QPainter>
 
+// Magick++ include.
+#include <Magick++.h>
+
 
 namespace QGifLib {
 
@@ -278,14 +281,58 @@ struct ArrayDeleter {
 	}
 };
 
+Magick::Image convert( const QImage & qimg )
+{
+	Magick::Image img( Magick::Geometry( qimg.width(), qimg.height() ),
+		Magick::ColorRGB( 0.0, 0.0, 0.0) );
+
+	const double scale = 1.0 / 256.0;
+
+	img.modifyImage();
+
+	Magick::PixelPacket * pixels;
+	Magick::ColorRGB mgc;
+
+	for( int y = 0; y < qimg.height(); ++y )
+	{
+		pixels = img.setPixels( 0, y, img.columns(), 1 );
+
+		for( int x = 0; x < qimg.width(); ++x )
+		{
+			QColor pix = qimg.pixel( x, y );
+
+			mgc.red( scale * pix.red() );
+			mgc.green( scale * pix.green() );
+			mgc.blue( scale * pix.blue() );
+
+			*pixels++ = mgc;
+		}
+
+		img.syncPixels();
+	}
+
+	return img;
+}
+
 struct Resources {
 	std::shared_ptr< ColorMapObject > cmap;
 	std::shared_ptr< GifColorType > colors;
 	std::shared_ptr< GifPixelType > pixels;
 
+	static int color( const Magick::ColorRGB & c )
+	{
+		const int r = c.red() * 255;
+		const int g = c.green() * 255;
+		const int b = c.blue() * 255;
+
+		return ( r << 16 ) | ( g << 8 ) | b;
+	}
+
 	void init( const QImage & img )
 	{
-		const auto colorTable = img.colorTable();
+		auto tmp = convert( img );
+		tmp.quantizeColors( 256 );
+		tmp.quantize();
 
 		cmap = std::make_shared< ColorMapObject > ();
 		cmap->ColorCount = 256;
@@ -294,18 +341,24 @@ struct Resources {
 		colors = std::shared_ptr< GifColorType > ( new GifColorType[ 256 ],
 			ArrayDeleter< GifColorType > () );
 
-		cmap->Colors = colors.get();;
+		cmap->Colors = colors.get();
 
 		int c = 0;
 
-		for( ; c < colorTable.size() ; ++c )
+		std::map< int, unsigned char > ccm;
+
+		for( ; c < tmp.colorMapSize(); ++c )
 		{
-			colors.get()[ c ].Red = qRed( colorTable[ c ] );
-			colors.get()[ c ].Green = qGreen( colorTable[ c ] );
-			colors.get()[ c ].Blue = qBlue( colorTable[ c ] );
+			const auto cc = tmp.colorMap( c );
+
+			colors.get()[ c ].Red = Magick::Color::scaleQuantumToDouble( cc.redQuantum() ) * 255;
+			colors.get()[ c ].Green = Magick::Color::scaleQuantumToDouble( cc.greenQuantum() ) * 255;
+			colors.get()[ c ].Blue = Magick::Color::scaleQuantumToDouble( cc.blueQuantum() ) * 255;
+
+			ccm[ color( cc ) ] = static_cast< unsigned char > ( c );
 		}
 
-		for( ; c < 256 ; ++c )
+		for( ; c < 256; ++c )
 		{
 			colors.get()[ c ].Red = 0;
 			colors.get()[ c ].Green = 0;
@@ -315,19 +368,27 @@ struct Resources {
 		pixels = std::shared_ptr< GifPixelType > ( new GifPixelType[ img.width() * img.height() ],
 			ArrayDeleter< GifPixelType > () );
 
-		for( int y = 0; y < img.height(); ++y )
-			std::memcpy( &pixels.get()[ y * img.width() ], img.scanLine( y ), img.width() );
+		const Magick::PixelPacket * p;
+		Magick::ColorRGB mgc;
+
+		for( int y = 0; y < img.height(); ++y)
+		{
+			p = tmp.getConstPixels( 0, y, img.width(), 1 );
+
+			for( int x = 0; x < img.width(); ++x )
+			{
+				mgc = *p++;
+
+				pixels.get()[ img.width() * y + x ] = ccm[ color( mgc ) ];
+			}
+		}
 	}
 };
 
-inline
-QImage
+inline QImage
 loadImage( const QString & fileName )
 {
 	QImage ret( fileName );
-	ret.setColorCount( 256 );
-//	ret.convertTo( QImage::Format_Indexed8, Qt::ThresholdDither | Qt::NoOpaqueDetection );
-	ret.convertTo( QImage::Format_Indexed8 );
 
 	return ret;
 }
@@ -476,9 +537,6 @@ addFrame( GifFileType * handle, QImage & key, const QImage & frame, int delay,
 		p.drawImage( frame.width() < key.width() ? ( key.width() - frame.width() ) / 2 : 0,
 			frame.height() < key.height() ? ( key.height() - frame.height() ) / 2 : 0,
 			frame );
-		img.setColorCount( 256 );
-//		img.convertTo( QImage::Format_Indexed8, Qt::ThresholdDither | Qt::NoOpaqueDetection );
-		img.convertTo( QImage::Format_Indexed8 );
 	}
 
 	QImage tmp;
