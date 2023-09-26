@@ -326,7 +326,8 @@ loadImage( const QString & fileName )
 {
 	QImage ret( fileName );
 	ret.setColorCount( 256 );
-	ret.convertTo( QImage::Format_Indexed8, Qt::ThresholdDither | Qt::NoOpaqueDetection );
+//	ret.convertTo( QImage::Format_Indexed8, Qt::ThresholdDither | Qt::NoOpaqueDetection );
+	ret.convertTo( QImage::Format_Indexed8 );
 
 	return ret;
 }
@@ -460,7 +461,7 @@ diffImage( const QImage & key, const QImage & img )
 	return { img.copy( r ), r };
 }
 
-bool
+std::pair< bool, int >
 addFrame( GifFileType * handle, QImage & key, const QImage & frame, int delay,
 	std::vector< Resources > & resources )
 {
@@ -476,7 +477,8 @@ addFrame( GifFileType * handle, QImage & key, const QImage & frame, int delay,
 			frame.height() < key.height() ? ( key.height() - frame.height() ) / 2 : 0,
 			frame );
 		img.setColorCount( 256 );
-		img.convertTo( QImage::Format_Indexed8, Qt::ThresholdDither | Qt::NoOpaqueDetection );
+//		img.convertTo( QImage::Format_Indexed8, Qt::ThresholdDither | Qt::NoOpaqueDetection );
+		img.convertTo( QImage::Format_Indexed8 );
 	}
 
 	QImage tmp;
@@ -484,11 +486,19 @@ addFrame( GifFileType * handle, QImage & key, const QImage & frame, int delay,
 
 	std::tie( tmp, r ) = diffImage( key, img );
 
-	const auto ret = addFrame( handle, tmp, r, delay, resources );
+	bool ret = true;
+	int delta = delay;
 
-	key = img;
+	if( !r.isNull() )
+	{
+		ret = addFrame( handle, tmp, r, delay, resources );
 
-	return ret;
+		delta = 0;
+
+		key = img;
+	}
+
+	return std::make_pair( ret, delta );
 }
 
 } /* namespace */
@@ -539,9 +549,14 @@ Gif::write( const QString & fileName,
 
 			for( qsizetype i = 1; i < pngFileNames.size(); ++i )
 			{
-				if( !addFrame( handle, key, loadImage( pngFileNames.at( i ) ),
-					delays.at( i ), resources ) )
-						return closeEHandleWithError( handle );
+				int delta = 0;
+				bool result = false;
+
+				std::tie( result, delta ) = addFrame( handle, key,
+					loadImage( pngFileNames.at( i ) ), delays.at( i ) + delta, resources );
+
+				if( !result )
+					return closeEHandleWithError( handle );
 			}
 
 			closeEHandle( handle );

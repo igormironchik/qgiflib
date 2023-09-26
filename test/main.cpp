@@ -48,27 +48,38 @@ int main( int argc, char ** argv )
 	QGifLib::Gif::write( "out.gif", gif.fileNames(), delays, 0 );
 
 	QLabel l;
-	l.resize( gif.at( 0 ).size() );
-	l.setPixmap( QPixmap::fromImage( gif.at( 0 ) ) );
+	l.setText( "GIF is not available." );
+
+	if( gif.count() )
+	{
+		l.resize( gif.at( 0 ).size() );
+		l.setPixmap( QPixmap::fromImage( gif.at( 0 ) ) );
+	}
+	else
+		l.resize( 400, 400 );
+
 	l.show();
 
 	QTimer t;
-	t.setInterval( gif.delay( 0 ) );
+	t.setInterval( gif.count() ? gif.delay( 0 ) : 1000 );
 
-	QObject::connect( &t, &QTimer::timeout,
-		[&]()
-		{
-			static int i = 0;
+	if( gif.count() )
+	{
+		QObject::connect( &t, &QTimer::timeout,
+			[&]()
+			{
+				static int i = 0;
 
-			++i;
+				++i;
 
-			if( i == gif.count() )
-				i = 0;
+				if( i == gif.count() )
+					i = 0;
 
-			l.setPixmap( QPixmap::fromImage( gif.at( i ) ) );
-		} );
+				l.setPixmap( QPixmap::fromImage( gif.at( i ) ) );
+			} );
 
-	t.start();
+		t.start();
+	}
 
 	return QApplication::exec();
 }
