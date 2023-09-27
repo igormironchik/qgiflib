@@ -332,7 +332,7 @@ struct Resources {
 	std::shared_ptr< ColorMapObject > cmap;
 	std::shared_ptr< GifColorType > colors;
 	std::shared_ptr< GifPixelType > pixels;
-	int colorMapSize = 0;
+	int colorMapSize = 256;
 
 	static int color( const Magick::ColorRGB & c )
 	{
@@ -343,23 +343,11 @@ struct Resources {
 		return ( r << 16 ) | ( g << 8 ) | b;
 	}
 
-	static int colorMapSizePower2( int s )
-	{
-		int res = 2;
-
-		while( s > res && res < 256 )
-			res = res << 1;
-
-		return res;
-	}
-
 	void init( const QImage & img )
 	{
 		auto tmp = convert( img );
 		tmp.quantizeColors( 256 );
 		tmp.quantize();
-
-		colorMapSize = colorMapSizePower2( tmp.colorMapSize() );
 
 		cmap = std::make_shared< ColorMapObject > ();
 		cmap->ColorCount = colorMapSize;
