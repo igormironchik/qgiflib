@@ -318,6 +318,7 @@ struct Resources {
 	std::shared_ptr< ColorMapObject > cmap;
 	std::shared_ptr< GifColorType > colors;
 	std::shared_ptr< GifPixelType > pixels;
+	int colorMapSize = 0;
 
 	static int color( const Magick::ColorRGB & c )
 	{
@@ -328,17 +329,29 @@ struct Resources {
 		return ( r << 16 ) | ( g << 8 ) | b;
 	}
 
+	static int colorMapSizePower2( int s )
+	{
+		int res = 2;
+
+		while( s > res && res < 256 )
+			res = res << 1;
+
+		return res;
+	}
+
 	void init( const QImage & img )
 	{
 		auto tmp = convert( img );
 		tmp.quantizeColors( 256 );
 		tmp.quantize();
 
+		colorMapSize = colorMapSizePower2( tmp.colorMapSize() );
+
 		cmap = std::make_shared< ColorMapObject > ();
-		cmap->ColorCount = 256;
+		cmap->ColorCount = colorMapSize;
 		cmap->BitsPerPixel = 8;
 
-		colors = std::shared_ptr< GifColorType > ( new GifColorType[ 256 ],
+		colors = std::shared_ptr< GifColorType > ( new GifColorType[ colorMapSize ],
 			ArrayDeleter< GifColorType > () );
 
 		cmap->Colors = colors.get();
@@ -358,7 +371,7 @@ struct Resources {
 			ccm[ color( cc ) ] = static_cast< unsigned char > ( c );
 		}
 
-		for( ; c < 256; ++c )
+		for( ; c < colorMapSize; ++c )
 		{
 			colors.get()[ c ].Red = 0;
 			colors.get()[ c ].Green = 0;
@@ -582,7 +595,7 @@ Gif::write( const QString & fileName,
 
 			std::vector< Resources > resources;
 
-			if( EGifPutScreenDesc( handle, key.width(), key.height(), 256, 0,
+			if( EGifPutScreenDesc( handle, key.width(), key.height(), res.colorMapSize, 0,
 				res.cmap.get() ) == GIF_ERROR )
 					return closeEHandleWithError( handle );
 
