@@ -547,7 +547,7 @@ addFrame( GifFileType * handle, QImage & key, const QImage & frame, int delay,
 	bool ret = true;
 	int delta = delay;
 
-	if( !r.isNull() )
+	if( r.width() && r.height() )
 	{
 		ret = addFrame( handle, tmp, r, delay, resources );
 
