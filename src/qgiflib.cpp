@@ -186,7 +186,10 @@ Gif::load( const QString & fileName )
 					}
 
 					if( key.isNull() )
-						key = img.convertedTo( QImage::Format_ARGB32 );
+					{
+						img.convertTo( QImage::Format_ARGB32 );
+						key = img;
+					}
 					else
 					{
 						QImage tmp = key;
