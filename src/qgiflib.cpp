@@ -94,7 +94,7 @@ Gif::fileNames() const
 	QStringList res;
 
 	for( int i = 1; i <= count(); ++i )
-		res.push_back( dir.filePath( QString( "%1.png" ).arg( i ) ) );
+		res.push_back( m_dir.filePath( QString( "%1.png" ).arg( i ) ) );
 
 	return res;
 }
@@ -163,7 +163,7 @@ Gif::load( const QString & fileName )
 						}
 					}
 
-					++framesCount;
+					++m_framesCount;
 
 					ColorMapObject * cm = ( handle->Image.ColorMap ? handle->Image.ColorMap :
 						handle->SColorMap );
@@ -202,10 +202,10 @@ Gif::load( const QString & fileName )
 							key = img;
 					}
 
-					delays.push_back( animDelay );
+					m_delays.push_back( animDelay );
 
-					if( dir.isValid() )
-						img.save( dir.filePath( QString( "%1.png" ).arg( framesCount ) ) );
+					if( m_dir.isValid() )
+						img.save( m_dir.filePath( QString( "%1.png" ).arg( m_framesCount ) ) );
 				}
 					break;
 
@@ -258,20 +258,26 @@ Gif::load( const QString & fileName )
 qsizetype
 Gif::count() const
 {
-	return framesCount;
+	return m_framesCount;
 }
 
 int
 Gif::delay( qsizetype idx ) const
 {
-	return delays.at( idx );
+	return m_delays.at( idx );
+}
+
+const QVector< int > &
+Gif::delays() const
+{
+	return m_delays;
 }
 
 QImage
 Gif::at( qsizetype idx ) const
 {
-	if( dir.isValid() )
-		return QImage( dir.filePath( QString( "%1.png" ).arg( idx + 1 ) ) );
+	if( m_dir.isValid() )
+		return QImage( m_dir.filePath( QString( "%1.png" ).arg( idx + 1 ) ) );
 	else
 		return {};
 }
@@ -650,10 +656,10 @@ Gif::write( const QString & fileName,
 void
 Gif::clean()
 {
-	framesCount = 0;
-	delays.clear();
-	dir.remove();
-	dir = QTemporaryDir( "./" );
+	m_framesCount = 0;
+	m_delays.clear();
+	m_dir.remove();
+	m_dir = QTemporaryDir( "./" );
 }
 
 } /* namespace QGifLib */

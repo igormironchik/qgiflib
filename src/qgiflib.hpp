@@ -58,6 +58,8 @@ public:
 		const QString & fileName );
 	//! \return Delay interval in millseconds.
 	int delay( qsizetype idx ) const;
+	//! \return Delays of frames.
+	const QVector< int > & delays() const;
 	//! \return Count of frames.
 	qsizetype count() const;
 	//! \return Frame with given index (starting at 0).
@@ -90,9 +92,9 @@ private:
 	static bool closeEHandle( GifFileType * handle );
 
 private:
-	qsizetype framesCount = 0;
-	QTemporaryDir dir = QTemporaryDir( "./" );
-	QVector< int > delays;
+	qsizetype m_framesCount = 0;
+	QTemporaryDir m_dir = QTemporaryDir( "./" );
+	QVector< int > m_delays;
 }; // class Gif
 
 } /* namespace QGifLib */
