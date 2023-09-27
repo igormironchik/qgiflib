@@ -9,7 +9,15 @@ endif( NOT CMAKE_BUILD_TYPE )
 
 project( giflib )
 
-file( GLOB SRC_C *.c )
-file( GLOB SRC_H *.h )
+set( SRC gif_hash.h
+	gif_lib.h
+	gif_lib_private.h
+	dgif_lib.c
+	egif_lib.c
+	gif_hash.c
+	gif_err.c
+	gif_font.c
+	gifalloc.c
+	openbsd-reallocarray.c )
 
-add_library( giflib ${SRC_C} ${SRC_H} )
+add_library( giflib ${SRC} )
