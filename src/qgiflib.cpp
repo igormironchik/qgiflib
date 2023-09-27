@@ -461,7 +461,7 @@ diffImage( const QImage & key, const QImage & img )
 
 	for( j = 0; j < key.height(); ++j )
 	{
-		for( i = x + 1; i < key.width(); ++i )
+		for( i = x; i < key.width(); ++i )
 		{
 			if( key.pixel( i, j ) != img.pixel( i, j ) )
 			{
