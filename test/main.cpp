@@ -43,11 +43,12 @@ int main( int argc, char ** argv )
 	QGifLib::Gif gif;
 	gif.load( "happy.gif" );
 
-	QVector< int > delays( gif.count(), gif.count() ? gif.delay( 0 ) : 0 );
+//	QVector< int > delays( gif.count(), gif.count() ? gif.delay( 0 ) : 0 );
 
-	QGifLib::Gif::write( "out.gif", gif.fileNames(), delays, 0 );
+//	QGifLib::Gif::write( "out.gif", gif.fileNames(), delays, 0 );
 
 	QLabel l;
+	l.setAlignment( Qt::AlignCenter );
 	l.setText( "GIF is not available." );
 
 	if( gif.count() )

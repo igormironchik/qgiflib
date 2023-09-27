@@ -110,6 +110,7 @@ Gif::load( const QString & fileName )
 	{
 		int animDelay = -1;
 		int disposalMode = -1;
+		int transparentIndex = -1;
 		GifRecordType recordType;
 		QImage key;
 
@@ -176,7 +177,10 @@ Gif::load( const QString & fileName )
 					{
 						GifColorType gifColor = cm->Colors[ i ];
 						QRgb color = gifColor.Blue | ( gifColor.Green << 8 ) |
-							( gifColor.Red << 16 ) | ( 0xFF << 24 );
+							( gifColor.Red << 16 );
+
+						if( i != transparentIndex )
+							color |= ( 0xFF << 24 );
 
 						img.setColor( i, color );
 					}
@@ -223,6 +227,7 @@ Gif::load( const QString & fileName )
 								DGifExtensionToGCB( extData[ 0 ], extData + 1, &b );
 								animDelay = b.DelayTime * 10;
 								disposalMode = b.DisposalMode;
+								transparentIndex = b.TransparentColor;
 							}
 								break;
 
