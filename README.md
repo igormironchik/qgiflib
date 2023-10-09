@@ -9,6 +9,7 @@ This library is just a wrapper to simplify work with `GIFs` in `Qt`.
 Interface is quite simple, look.
 
 ```cpp
+//! Gif file wrapper.
 class Gif final
 {
 public:
@@ -21,6 +22,8 @@ public:
 		const QString & fileName );
 	//! \return Delay interval in millseconds.
 	int delay( qsizetype idx ) const;
+	//! \return Delays of frames.
+	const QVector< int > & delays() const;
 	//! \return Count of frames.
 	qsizetype count() const;
 	//! \return Frame with given index (starting at 0).
@@ -44,17 +47,5 @@ public:
 
 	//! Clean internals.
 	void clean();
-
-private:
-	bool closeHandleWithError( GifFileType * handle );
-	bool closeHandle( GifFileType * handle );
-
-	static bool closeEHandleWithError( GifFileType * handle );
-	static bool closeEHandle( GifFileType * handle );
-
-private:
-	qsizetype framesCount = 0;
-	QTemporaryDir dir = QTemporaryDir( "./" );
-	QVector< int > delays;
 }; // class Gif
 ```
