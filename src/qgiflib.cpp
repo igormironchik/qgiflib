@@ -759,11 +759,13 @@ Gif::write( const QString & fileName,
 	unsigned int loopCount )
 {
 	if( !pngFileNames.isEmpty() && pngFileNames.size() == delays.size() )
-	{
+	{	
 		auto handle = EGifOpenFileName( fileName.toLocal8Bit().data(), false, nullptr );
 
 		if( handle )
 		{
+			emit writeProgress( 0 );
+			
 			EGifSetGifVersion( handle, true );
 
 			QImage key = loadImage( pngFileNames.front() );
@@ -797,6 +799,8 @@ Gif::write( const QString & fileName,
 				return closeEHandleWithError( handle );
 
 			int delta = 0;
+			
+			emit writeProgress( qRound( ( 1.0 / pngFileNames.size() ) * 100.0 ) );
 
 			for( qsizetype i = 1; i < pngFileNames.size(); ++i )
 			{
@@ -804,6 +808,8 @@ Gif::write( const QString & fileName,
 
 				std::tie( result, delta ) = addFrame( handle, key,
 					loadImage( pngFileNames.at( i ) ), delays.at( i ) + delta, resources );
+				
+				emit writeProgress( qRound( ( (double) i / pngFileNames.size() ) * 100.0 ) );
 
 				if( !result )
 					return closeEHandleWithError( handle );
@@ -811,6 +817,8 @@ Gif::write( const QString & fileName,
 
 			closeEHandle( handle );
 
+			emit writeProgress( 100 );
+			
 			return true;
 		}
 	}

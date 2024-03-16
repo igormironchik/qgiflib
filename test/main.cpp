@@ -43,7 +43,7 @@ int main( int argc, char ** argv )
 	QGifLib::Gif gif;
 	gif.load( "happy.gif" );
 
-	QGifLib::Gif::write( "out.gif", gif.fileNames(), gif.delays(), 0 );
+//	gif.write( "out.gif", gif.fileNames(), gif.delays(), 0 );
 
 	QLabel l;
 	l.setAlignment( Qt::AlignCenter );
