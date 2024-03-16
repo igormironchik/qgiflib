@@ -38,11 +38,246 @@
 // Qt include.
 #include <QPainter>
 
-// Magick++ include.
-#include <Magick++.h>
-
 
 namespace QGifLib {
+
+namespace /* anonymous */ {
+
+struct Color {
+	unsigned char red = 0;
+	unsigned char green = 0;
+	unsigned char blue = 0;
+	
+	bool operator == ( const Color & c ) const
+	{
+		return ( red == c.red && green == c.green && blue == c.blue );
+	}
+	
+	bool operator < ( const Color & c ) const
+	{
+		return ( red < c.red || ( red == c.red && green < c.green ||
+			( red == c.red && green == c.green && blue < c.blue ) ) );
+	}
+};
+
+size_t qHash( const Color & c )
+{
+	return ( c.red << 16 | c.green << 8 | c.blue );
+}
+
+enum ColorComponent {
+	Red,
+	Green,
+	Blue
+};
+
+struct ColorRange {
+	unsigned char lowest = 0;
+	unsigned char highest = 0;
+};
+
+QPair< ColorComponent, ColorRange > longestSide( const QMap< Color, long long int > & s )
+{
+	ColorRange red = { s.firstKey().red, 0 };
+	ColorRange green = { s.firstKey().green, 0 };
+	ColorRange blue = { s.firstKey().blue, 0 };
+	
+	for( const auto & k : s.keys() )
+	{
+		if( k.red < red.lowest )
+			red.lowest = k.red;
+		
+		if( k.red > red.highest )
+			red.highest = k.red;
+		
+		if( k.green < green.lowest )
+			green.lowest = k.green;
+		
+		if( k.green > green.highest )
+			green.highest = k.green;
+		
+		if( k.blue < blue.lowest )
+			blue.lowest = k.blue;
+		
+		if( k.blue > blue.highest )
+			blue.highest = k.blue;
+	}
+	
+	unsigned char redDistance = qRound( (float) ( red.highest - red.lowest ) * 0.299f );
+	unsigned char greenDistance = qRound( (float) ( green.highest - green.lowest ) * 0.587f );
+	unsigned char blueDistance = qRound( (float) ( blue.highest - blue.lowest ) * 0.114f );
+	
+	const QMap< unsigned char, ColorComponent > m = { { redDistance, Red }, { greenDistance, Green },
+		{ blueDistance, Blue } };
+	
+	switch( m.last() )
+	{
+		case Red :
+			return { Red, red };
+			
+		case Green :
+			return { Green, green };
+			
+		case Blue :
+			return { Blue, blue };
+			
+		default :
+			return { Red, red };
+	}
+}
+
+void splitByLongestSide( const QMap< Color, long long int > & s,
+	QVector< QMap< Color, long long int > > & appendTo )
+{
+	QMap< Color, long long int > left, right;
+	
+	if( !s.isEmpty() )
+	{
+		const auto side = longestSide( s );
+		const unsigned char middle = ( side.second.highest - side.second.lowest ) / 2 +
+			side.second.lowest;
+		
+		for( auto it = s.cbegin(), last = s.cend(); it != last; ++it )
+		{
+			switch( side.first )
+			{
+				case Red :
+				{
+					if( it.key().red < middle )
+						left.insert( it.key(), it.value() );
+					else
+						right.insert( it.key(), it.value() );
+				}
+					break;
+					
+				case Green :
+				{
+					if( it.key().green < middle )
+						left.insert( it.key(), it.value() );
+					else
+						right.insert( it.key(), it.value() );
+				}
+					break;
+					
+				case Blue :
+				{
+					if( it.key().blue < middle )
+						left.insert( it.key(), it.value() );
+					else
+						right.insert( it.key(), it.value() );
+				}
+					break;
+					
+				default :
+					break;
+			}
+		}
+	}
+	
+	appendTo.push_back( left );
+	appendTo.push_back( right );
+}
+
+QRgb colorForSet( const QMap< Color, long long int > & s )
+{
+	long long int red = 0, green = 0, blue = 0;
+	long long int count = 0;
+	
+	if( !s.isEmpty() )
+	{
+		for( auto it = s.cbegin(), last = s.cend(); it != last; ++it )
+		{
+			red += it.key().red * it.value();
+			green += it.key().green * it.value();
+			blue += it.key().blue * it.value();
+			count += it.value();
+		}
+		
+		return qRgb( red / count, green / count, blue / count );
+	}
+	else
+		return qRgb( 0, 0, 0 );
+}
+
+uint indexOfColor( const QColor & c, const QVector< QMap< Color, long long int > > & indexed )
+{
+	uint i = 0;
+	const auto cc = Color{ static_cast< unsigned char > ( c.red() ),
+		static_cast< unsigned char > ( c.green() ),
+		static_cast< unsigned char > ( c.blue() ) };
+	
+	for( ; i < indexed.size(); ++i )
+	{
+		if( indexed[ i ].contains( cc ) )
+			return i;
+	}
+	
+	return 0;
+}
+
+} /* namespace anonymous */
+
+QImage quantizeImageToKColors( const QImage & img, long long int k )
+{
+	if( k == 0 || k == 1 )
+		return QImage();
+	
+	long long int n = 1;
+	
+	while( n < k )
+		n <<= 1;
+	
+	k = n;
+	
+	QVector< QMap< Color, long long int > > indexed;
+	indexed.push_back( {} );
+	
+	for( long long int y = 0; y < img.height(); ++y )
+	{
+		for( long long int x = 0; x < img.width(); ++x )
+		{
+			const auto ic = img.pixelColor( x, y );
+			const auto c = Color{ static_cast< unsigned char > ( ic.red() ),
+				static_cast< unsigned char > ( ic.green() ),
+				static_cast< unsigned char > ( ic.blue() ) };
+			
+			if( !indexed.front().contains( c ) )
+				indexed.front()[ c ] = 1;
+			else
+				++indexed.front()[ c ];
+		}
+	}
+	
+	while( n != 1 )
+	{
+		QVector< QMap< Color, long long int > > tmp;
+		
+		for( const auto & s : std::as_const( indexed ) )
+			splitByLongestSide( s, tmp );
+		
+		std::swap( indexed, tmp );
+		
+		n /= 2;
+	}
+	
+	QList< QRgb > newColors;
+	
+	for( const auto & s : std::as_const( indexed ) )
+		newColors.push_back( colorForSet( s ) );
+	
+	QImage res( img.size(), QImage::Format_Indexed8 );
+	res.setColorCount( k );
+	res.setColorTable( newColors );
+	
+	for( long long int y = 0; y < img.height(); ++y )
+	{
+		for( long long int x = 0; x < img.width(); ++x )
+			res.setPixel( x, y, indexOfColor( img.pixelColor( x, y ), indexed ) );
+	}
+	
+	return res;
+}
+
 
 //
 // Gif
@@ -295,59 +530,15 @@ struct ArrayDeleter {
 	}
 };
 
-Magick::Image convert( const QImage & qimg )
-{
-	Magick::Image img( Magick::Geometry( qimg.width(), qimg.height() ),
-		Magick::ColorRGB( 0.0, 0.0, 0.0) );
-
-	const double scale = 1.0 / 256.0;
-
-	img.modifyImage();
-
-	Magick::PixelPacket * pixels;
-	Magick::ColorRGB mgc;
-
-	for( int y = 0; y < qimg.height(); ++y )
-	{
-		pixels = img.setPixels( 0, y, img.columns(), 1 );
-
-		for( int x = 0; x < qimg.width(); ++x )
-		{
-			QColor pix = qimg.pixel( x, y );
-
-			mgc.red( scale * pix.red() );
-			mgc.green( scale * pix.green() );
-			mgc.blue( scale * pix.blue() );
-
-			*pixels++ = mgc;
-		}
-
-		img.syncPixels();
-	}
-
-	return img;
-}
-
 struct Resources {
 	std::shared_ptr< ColorMapObject > cmap;
 	std::shared_ptr< GifColorType > colors;
 	std::shared_ptr< GifPixelType > pixels;
 	int colorMapSize = 256;
 
-	static int color( const Magick::ColorRGB & c )
-	{
-		const int r = c.red() * 255;
-		const int g = c.green() * 255;
-		const int b = c.blue() * 255;
-
-		return ( r << 16 ) | ( g << 8 ) | b;
-	}
-
 	void init( const QImage & img )
 	{
-		auto tmp = convert( img );
-		tmp.quantizeColors( 256 );
-		tmp.quantize();
+		const auto q = quantizeImageToKColors( img, colorMapSize );
 
 		cmap = std::make_shared< ColorMapObject > ();
 		cmap->ColorCount = colorMapSize;
@@ -358,43 +549,28 @@ struct Resources {
 
 		cmap->Colors = colors.get();
 
-		int c = 0;
+		std::map< QRgb, unsigned char > ccm;
+		
+		const auto ct = q.colorTable();
 
-		std::map< int, unsigned char > ccm;
-
-		for( ; c < tmp.colorMapSize(); ++c )
+		for( int c = 0; c < colorMapSize; ++c )
 		{
-			const auto cc = tmp.colorMap( c );
+			colors.get()[ c ].Red = qRed( ct[ c ] );
+			colors.get()[ c ].Green = qGreen( ct[ c ] );
+			colors.get()[ c ].Blue = qBlue( ct[ c ] );
 
-			colors.get()[ c ].Red = Magick::Color::scaleQuantumToDouble( cc.redQuantum() ) * 255;
-			colors.get()[ c ].Green = Magick::Color::scaleQuantumToDouble( cc.greenQuantum() ) * 255;
-			colors.get()[ c ].Blue = Magick::Color::scaleQuantumToDouble( cc.blueQuantum() ) * 255;
-
-			ccm[ color( cc ) ] = static_cast< unsigned char > ( c );
-		}
-
-		for( ; c < colorMapSize; ++c )
-		{
-			colors.get()[ c ].Red = 0;
-			colors.get()[ c ].Green = 0;
-			colors.get()[ c ].Blue = 0;
+			ccm[ ct[ c ] ] = static_cast< unsigned char > ( c );
 		}
 
 		pixels = std::shared_ptr< GifPixelType > ( new GifPixelType[ img.width() * img.height() ],
 			ArrayDeleter< GifPixelType > () );
 
-		const Magick::PixelPacket * p;
-		Magick::ColorRGB mgc;
-
-		for( int y = 0; y < img.height(); ++y)
+		for( int y = 0; y < img.height(); ++y )
 		{
-			p = tmp.getConstPixels( 0, y, img.width(), 1 );
-
 			for( int x = 0; x < img.width(); ++x )
 			{
-				mgc = *p++;
-
-				pixels.get()[ img.width() * y + x ] = ccm[ color( mgc ) ];
+				pixels.get()[ img.width() * y + x ] = static_cast< unsigned char > (
+					q.pixelIndex( x, y ) );
 			}
 		}
 	}

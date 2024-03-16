@@ -19,13 +19,7 @@ set( CMAKE_AUTOUIC ON )
 
 find_package( Qt6 REQUIRED COMPONENTS Core Gui )
 
-find_package( ImageMagick 6 EXACT REQUIRED COMPONENTS Magick++ MagickCore )
-
-add_definitions( -DMAGICKCORE_QUANTUM_DEPTH=16 )
-add_definitions( -DMAGICKCORE_HDRI_ENABLE=0 )
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/giflib
-	${ImageMagick_INCLUDE_DIRS} )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/giflib )
 
 add_library( qgiflib qgiflib.hpp qgiflib.cpp )
 
