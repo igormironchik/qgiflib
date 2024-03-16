@@ -11,7 +11,14 @@ Interface is quite simple, look.
 ```cpp
 //! Gif file wrapper.
 class Gif final
+	:	public QObject
 {
+	Q_OBJECT
+	
+signals:
+	//! Write GIF progress.
+	void writeProgress( int percent );
+	
 public:
 	Gif() = default;
 	~Gif() = default;
@@ -35,7 +42,7 @@ public:
 	QStringList fileNames() const;
 
 	//! Write GIF from sequence of PNG files.
-	static bool write(
+	bool write(
 		//! Output file name.
 		const QString & fileName,
 		//! Sequence of PNG file names.
