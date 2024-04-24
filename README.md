@@ -3,8 +3,14 @@
 # `GIF` reading and writing library for `Qt`
 
 In internals this library uses [`giflib`](https://giflib.sourceforge.net/) library.
+No more dependencies. All things are done in place.
 
 This library is just a wrapper to simplify work with `GIFs` in `Qt`.
+
+This library doesn't allocate more memory then for two complete frames.
+
+Access time to frames and delays are `O(1)`. This is done by storing frames on
+disk in `PNG` files.
 
 Interface is quite simple, look.
 
