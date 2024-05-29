@@ -259,6 +259,11 @@ QImage quantizeImageToKColors( const QImage & img, long long int k )
 // Gif
 //
 
+Gif::Gif( QObject * parent )
+	:	QObject( parent )
+{
+}
+
 bool
 Gif::closeHandle( GifFileType * handle )
 {
