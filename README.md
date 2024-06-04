@@ -26,7 +26,7 @@ signals:
 	void writeProgress( int percent );
 	
 public:
-	Gif() = default;
+	explicit Gif( QObject * parent = nullptr );
 	~Gif() = default;
 
 	//! Load GIF.
