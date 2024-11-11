@@ -253,6 +253,8 @@ QImage quantizeImageToKColors(const QImage &img, long long int k)
             if (it->second.second->size() > 1) {
                 indexed[emptyIdx.front()].insert(it->second.first, it->first);
 
+                it->second.second->remove(it->second.first);
+
                 emptyIdx.pop_front();
             }
 

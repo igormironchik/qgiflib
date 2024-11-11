@@ -18,6 +18,8 @@ int main(int argc, char **argv)
     QGifLib::Gif gif;
     gif.load("happy.gif");
 
+//    QGifLib::quantizeImageToKColors(QImage("k.png"), 256).save("q.png");
+
 //    gif.write( "out.gif", gif.fileNames(), gif.delays(), 0 );
 
     QLabel l;
