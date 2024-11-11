@@ -10,6 +10,8 @@
 // C++ include.
 #include <memory>
 #include <vector>
+#include <map>
+#include <utility>
 
 // Qt include.
 #include <QPainter>
@@ -25,21 +27,24 @@ struct Color {
     unsigned char green = 0;
     unsigned char blue = 0;
 
-    bool operator==(const Color &c) const
-    {
-        return (red == c.red && green == c.green && blue == c.blue);
-    }
+    bool operator==(const Color &c) const;
 
-    bool operator<(const Color &c) const
-    {
-        return (red < c.red || (red == c.red && green < c.green ||
-                                (red == c.red && green == c.green && blue < c.blue)));
-    }
+    bool operator<(const Color &c) const;
 };
 
 size_t qHash(const Color &c)
 {
     return (c.red << 16 | c.green << 8 | c.blue);
+}
+
+bool Color::operator==(const Color &c) const
+{
+    return qHash(*this) == qHash(c);
+}
+
+bool Color::operator<(const Color &c) const
+{
+    return qHash(*this) < qHash(c);
 }
 
 enum ColorComponent { Red, Green, Blue };
@@ -177,6 +182,8 @@ uint indexOfColor(const QColor &c, const QVector<QMap<Color, long long int>> &in
     return 0;
 }
 
+} /* namespace anonymous */
+
 QImage quantizeImageToKColors(const QImage &img, long long int k)
 {
     if (k == 0 || k == 1) {
@@ -194,6 +201,7 @@ QImage quantizeImageToKColors(const QImage &img, long long int k)
     QVector<QMap<Color, long long int>> indexed;
     indexed.push_back({});
 
+    // collect colors and count them
     for (long long int y = 0; y < img.height(); ++y) {
         for (long long int x = 0; x < img.width(); ++x) {
             const auto ic = img.pixelColor(x, y);
@@ -208,6 +216,7 @@ QImage quantizeImageToKColors(const QImage &img, long long int k)
         }
     }
 
+    // split by colors cube.
     while (n != 1) {
         QVector<QMap<Color, long long int>> tmp;
 
@@ -218,6 +227,39 @@ QImage quantizeImageToKColors(const QImage &img, long long int k)
         std::swap(indexed, tmp);
 
         n /= 2;
+    }
+
+    // Separate most common colors if we have empty slots.
+    QVector<qsizetype> emptyIdx;
+
+    for (auto i = 0; i < k; ++i) {
+        if (indexed[i].empty()) {
+            emptyIdx.push_back(i);
+        }
+    }
+
+    if (!emptyIdx.empty()) {
+        std::multimap<long long int, std::pair<Color, QMap<Color, long long int>*>> colorsCount;
+
+        for (auto i = 0; i < k; ++i) {
+            const auto keys = indexed[i].keys();
+
+            for (const auto &key : keys) {
+                colorsCount.insert(std::make_pair(indexed[i][key], std::make_pair(key, &indexed[i])));
+            }
+        }
+
+        for (auto it = colorsCount.crbegin(), last = colorsCount.crend(); it != last; ++it) {
+            if (it->second.second->size() > 1) {
+                indexed[emptyIdx.front()].insert(it->second.first, it->first);
+
+                emptyIdx.pop_front();
+            }
+
+            if (emptyIdx.empty()) {
+                break;
+            }
+        }
     }
 
     QList<QRgb> newColors;
@@ -238,8 +280,6 @@ QImage quantizeImageToKColors(const QImage &img, long long int k)
 
     return res;
 }
-
-} /* namespace anonymous */
 
 //
 // Gif

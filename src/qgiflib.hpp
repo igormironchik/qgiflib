@@ -18,6 +18,9 @@
 namespace QGifLib
 {
 
+//! Quantize image to K colors.
+QImage quantizeImageToKColors(const QImage &img, long long int k);
+
 //
 // Gif
 //
