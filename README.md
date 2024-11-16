@@ -1,5 +1,11 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+> [!IMPORTANT]
+>
+> This project is not supported anymore. But can be reopened if interest will
+> be in it. Please, let me know if you need something. Just write me email to
+> `igor.mironchik at gmail.com`.
+
 # `GIF` reading and writing library for `Qt`
 
 In internals this library uses [`giflib`](https://giflib.sourceforge.net/) library.
