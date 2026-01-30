@@ -19,7 +19,8 @@ namespace QGifLib
 {
 
 //! Quantize image to K colors.
-QImage quantizeImageToKColors(const QImage &img, long long int k);
+QImage quantizeImageToKColors(const QImage &img,
+                              long long int k);
 
 //
 // Gif
@@ -35,7 +36,8 @@ signals:
     void writeProgress(int percent);
 
 public:
-    explicit Gif(QObject *parent = nullptr);
+    Gif(const QString &tmpPath = QStringLiteral("./"),
+        QObject *parent = nullptr);
     ~Gif() = default;
 
     //! Load GIF.
@@ -78,8 +80,9 @@ private:
     static bool closeEHandle(GifFileType *handle);
 
 private:
+    QString m_tmpPath;
     qsizetype m_framesCount = 0;
-    QTemporaryDir m_dir = QTemporaryDir("./");
+    QTemporaryDir m_dir;
     QVector<int> m_delays;
 }; // class Gif
 

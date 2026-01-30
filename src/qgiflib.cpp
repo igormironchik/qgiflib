@@ -8,10 +8,10 @@
 #include "qgiflib.hpp"
 
 // C++ include.
-#include <memory>
-#include <vector>
 #include <map>
+#include <memory>
 #include <utility>
+#include <vector>
 
 // Qt include.
 #include <QPainter>
@@ -47,14 +47,21 @@ bool Color::operator<(const Color &c) const
     return qHash(*this) < qHash(c);
 }
 
-enum ColorComponent { Red, Green, Blue };
+enum ColorComponent {
+    Red,
+    Green,
+    Blue
+};
 
 struct ColorRange {
     unsigned char lowest = 0;
     unsigned char highest = 0;
 };
 
-QPair<ColorComponent, ColorRange> longestSide(const QMap<Color, long long int> &s)
+QPair<ColorComponent,
+      ColorRange>
+longestSide(const QMap<Color,
+                       long long int> &s)
 {
     ColorRange red = {s.firstKey().red, 0};
     ColorRange green = {s.firstKey().green, 0};
@@ -107,7 +114,10 @@ QPair<ColorComponent, ColorRange> longestSide(const QMap<Color, long long int> &
     }
 }
 
-void splitByLongestSide(const QMap<Color, long long int> &s, QVector<QMap<Color, long long int>> &appendTo)
+void splitByLongestSide(const QMap<Color,
+                                   long long int> &s,
+                        QVector<QMap<Color,
+                                     long long int>> &appendTo)
 {
     QMap<Color, long long int> left, right;
 
@@ -148,7 +158,8 @@ void splitByLongestSide(const QMap<Color, long long int> &s, QVector<QMap<Color,
     appendTo.push_back(right);
 }
 
-QRgb colorForSet(const QMap<Color, long long int> &s)
+QRgb colorForSet(const QMap<Color,
+                            long long int> &s)
 {
     long long int red = 0, green = 0, blue = 0;
     long long int count = 0;
@@ -167,11 +178,14 @@ QRgb colorForSet(const QMap<Color, long long int> &s)
     }
 }
 
-uint indexOfColor(const QColor &c, const QVector<QMap<Color, long long int>> &indexed)
+uint indexOfColor(const QColor &c,
+                  const QVector<QMap<Color,
+                                     long long int>> &indexed)
 {
     uint i = 0;
-    const auto cc = Color{static_cast<unsigned char>(c.red()), static_cast<unsigned char>(c.green()),
-            static_cast<unsigned char>(c.blue())};
+    const auto cc = Color{static_cast<unsigned char>(c.red()),
+                          static_cast<unsigned char>(c.green()),
+                          static_cast<unsigned char>(c.blue())};
 
     for (; i < indexed.size(); ++i) {
         if (indexed[i].contains(cc)) {
@@ -184,7 +198,8 @@ uint indexOfColor(const QColor &c, const QVector<QMap<Color, long long int>> &in
 
 } /* namespace anonymous */
 
-QImage quantizeImageToKColors(const QImage &img, long long int k)
+QImage quantizeImageToKColors(const QImage &img,
+                              long long int k)
 {
     if (k == 0 || k == 1) {
         return QImage();
@@ -205,8 +220,9 @@ QImage quantizeImageToKColors(const QImage &img, long long int k)
     for (long long int y = 0; y < img.height(); ++y) {
         for (long long int x = 0; x < img.width(); ++x) {
             const auto ic = img.pixelColor(x, y);
-            const auto c = Color{static_cast<unsigned char>(ic.red()), static_cast<unsigned char>(ic.green()),
-                    static_cast<unsigned char>(ic.blue())};
+            const auto c = Color{static_cast<unsigned char>(ic.red()),
+                                 static_cast<unsigned char>(ic.green()),
+                                 static_cast<unsigned char>(ic.blue())};
 
             if (!indexed.front().contains(c)) {
                 indexed.front()[c] = 1;
@@ -239,7 +255,7 @@ QImage quantizeImageToKColors(const QImage &img, long long int k)
     }
 
     if (!emptyIdx.empty()) {
-        std::multimap<long long int, std::pair<Color, QMap<Color, long long int>*>> colorsCount;
+        std::multimap<long long int, std::pair<Color, QMap<Color, long long int> *>> colorsCount;
 
         for (auto i = 0; i < k; ++i) {
             const auto keys = indexed[i].keys();
@@ -287,8 +303,11 @@ QImage quantizeImageToKColors(const QImage &img, long long int k)
 // Gif
 //
 
-Gif::Gif(QObject *parent)
+Gif::Gif(const QString &tmpPath,
+         QObject *parent)
     : QObject(parent)
+    , m_tmpPath(tmpPath)
+    , m_dir(tmpPath)
 {
 }
 
@@ -367,8 +386,11 @@ bool Gif::load(const QString &fileName)
                 int width = handle->Image.Width;
                 int height = handle->Image.Height;
 
-                if (width <= 0 || height <= 0 || width > (INT_MAX / height) || leftCol + width > handle->SWidth ||
-                    topRow + height > handle->SHeight) {
+                if (width <= 0
+                    || height <= 0
+                    || width > (INT_MAX / height)
+                    || leftCol + width > handle->SWidth
+                    || topRow + height > handle->SHeight) {
                     return closeHandleWithError(handle);
                 }
 
@@ -546,8 +568,8 @@ struct Resources {
             ccm[ct[c]] = static_cast<unsigned char>(c);
         }
 
-        m_pixels = std::shared_ptr<GifPixelType>(new GifPixelType[img.width() * img.height()],
-                                               ArrayDeleter<GifPixelType>());
+        m_pixels =
+            std::shared_ptr<GifPixelType>(new GifPixelType[img.width() * img.height()], ArrayDeleter<GifPixelType>());
 
         for (int y = 0; y < img.height(); ++y) {
             for (int x = 0; x < img.width(); ++x) {
@@ -564,7 +586,11 @@ inline QImage loadImage(const QString &fileName)
     return ret;
 }
 
-bool addFrame(GifFileType *handle, const QImage &img, const QRect &r, int delay, std::vector<Resources> &resources)
+bool addFrame(GifFileType *handle,
+              const QImage &img,
+              const QRect &r,
+              int delay,
+              std::vector<Resources> &resources)
 {
     GraphicsControlBlock b;
     b.DelayTime = delay / 10;
@@ -595,7 +621,10 @@ bool addFrame(GifFileType *handle, const QImage &img, const QRect &r, int delay,
     return true;
 }
 
-std::pair<QImage, QRect> diffImage(const QImage &key, const QImage &img)
+std::pair<QImage,
+          QRect>
+diffImage(const QImage &key,
+          const QImage &img)
 {
     int x = 0;
     int y = 0;
@@ -685,8 +714,13 @@ std::pair<QImage, QRect> diffImage(const QImage &key, const QImage &img)
     return {img.copy(r), r};
 }
 
-std::pair<bool, int> addFrame(GifFileType *handle, QImage &key, const QImage &frame, int delay,
-                              std::vector<Resources> &resources)
+std::pair<bool,
+          int>
+addFrame(GifFileType *handle,
+         QImage &key,
+         const QImage &frame,
+         int delay,
+         std::vector<Resources> &resources)
 {
     QImage img = frame;
 
@@ -721,8 +755,10 @@ std::pair<bool, int> addFrame(GifFileType *handle, QImage &key, const QImage &fr
 
 } /* namespace */
 
-bool Gif::write(const QString &fileName, const QStringList &pngFileNames,
-                const QVector<int> &delays, unsigned int loopCount)
+bool Gif::write(const QString &fileName,
+                const QStringList &pngFileNames,
+                const QVector<int> &delays,
+                unsigned int loopCount)
 {
     if (!pngFileNames.isEmpty() && pngFileNames.size() == delays.size()) {
         auto handle = EGifOpenFileName(fileName.toLocal8Bit().data(), false, nullptr);
@@ -739,7 +775,8 @@ bool Gif::write(const QString &fileName, const QStringList &pngFileNames,
 
             std::vector<Resources> resources;
 
-            if (EGifPutScreenDesc(handle, key.width(), key.height(), res.s_colorMapSize, 0, res.m_cmap.get()) == GIF_ERROR) {
+            if (EGifPutScreenDesc(handle, key.width(), key.height(), res.s_colorMapSize, 0, res.m_cmap.get())
+                == GIF_ERROR) {
                 return closeEHandleWithError(handle);
             }
 
@@ -774,8 +811,8 @@ bool Gif::write(const QString &fileName, const QStringList &pngFileNames,
             for (qsizetype i = 1; i < pngFileNames.size(); ++i) {
                 bool result = false;
 
-                std::tie(result, delta) = addFrame(handle, key, loadImage(pngFileNames.at(i)),
-                                                   delays.at(i) + delta, resources);
+                std::tie(result, delta) =
+                    addFrame(handle, key, loadImage(pngFileNames.at(i)), delays.at(i) + delta, resources);
 
                 emit writeProgress(qRound(((double)i / pngFileNames.size()) * 100.0));
 
@@ -802,7 +839,7 @@ void Gif::clean()
     m_framesCount = 0;
     m_delays.clear();
     m_dir.remove();
-    m_dir = QTemporaryDir("./");
+    m_dir = QTemporaryDir(m_tmpPath);
 }
 
 } /* namespace QGifLib */
