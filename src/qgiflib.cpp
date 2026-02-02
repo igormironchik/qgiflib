@@ -598,7 +598,7 @@ bool addFrame(GifFileType *handle,
               std::vector<Resources> &resources)
 {
     GraphicsControlBlock b;
-    b.DelayTime = delay / 10;
+    b.DelayTime = qRound((double) delay / 10.0);
     b.DisposalMode = DISPOSE_DO_NOT;
     b.TransparentColor = -1;
     b.UserInputFlag = false;
