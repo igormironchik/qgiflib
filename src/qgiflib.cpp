@@ -513,6 +513,11 @@ int Gif::delay(qsizetype idx) const
     return m_delays.at(idx);
 }
 
+void Gif::setDelay(qsizetype idx, int ms)
+{
+    m_delays[idx] = ms;
+}
+
 const QVector<int> &Gif::delays() const
 {
     return m_delays;

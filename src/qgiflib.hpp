@@ -46,6 +46,8 @@ public:
         const QString &fileName);
     //! \return Delay interval in millseconds.
     int delay(qsizetype idx) const;
+    //! Set delay.
+    void setDelay(qsizetype idx, int ms);
     //! \return Delays of frames.
     const QVector<int> &delays() const;
     //! \return Count of frames.
