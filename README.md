@@ -33,7 +33,8 @@ public:
     bool load(
         //! Input file name.
         const QString &fileName);
-    //! \return Delay interval in millseconds. First delay with index 0 is a delay between frames with indexes 0 and 1.
+    //! \return Delay interval in millseconds. First delay with
+    //! index 0 is a delay between frames with indexes 0 and 1.
     int delay(qsizetype idx) const;
     //! Set delay.
     void setDelay(qsizetype idx, int ms);
