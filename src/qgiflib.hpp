@@ -9,6 +9,7 @@
 // Qt include.
 #include <QImage>
 #include <QObject>
+#include <QPromise>
 #include <QString>
 #include <QTemporaryDir>
 
@@ -69,7 +70,9 @@ public:
         //! Sequence of delays in milliseconds.
         const QVector<int> &delays,
         //! Animation loop count, 0 means infinite.
-        unsigned int loopCount);
+        unsigned int loopCount,
+        //! QPromise for cancelling write operation in multithreaded environment.
+        QPromise<bool> *promise = nullptr);
 
     //! Clean internals.
     void clean();

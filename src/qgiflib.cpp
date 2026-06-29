@@ -763,7 +763,8 @@ addFrame(GifFileType *handle,
 bool Gif::write(const QString &fileName,
                 const QStringList &pngFileNames,
                 const QVector<int> &delays,
-                unsigned int loopCount)
+                unsigned int loopCount,
+                QPromise<bool> *promise)
 {
     if (!pngFileNames.isEmpty() && pngFileNames.size() == delays.size()) {
         auto handle = EGifOpenFileName(fileName.toLocal8Bit().data(), false, nullptr);
@@ -814,6 +815,10 @@ bool Gif::write(const QString &fileName,
             emit writeProgress(qRound((1.0 / pngFileNames.size()) * 100.0));
 
             for (qsizetype i = 1; i < pngFileNames.size(); ++i) {
+                if (promise && promise->isCanceled()) {
+                    break;
+                }
+
                 bool result = false;
 
                 std::tie(result, delta) =
@@ -822,11 +827,23 @@ bool Gif::write(const QString &fileName,
                 emit writeProgress(qRound(((double)i / pngFileNames.size()) * 100.0));
 
                 if (!result) {
+                    if (promise) {
+                        promise->addResult(false);
+                    }
+
                     return closeEHandleWithError(handle);
                 }
             }
 
             closeEHandle(handle);
+
+            if (promise) {
+                promise->addResult(!promise->isCanceled());
+
+                if (promise->isCanceled()) {
+                    return false;
+                }
+            }
 
             emit writeProgress(100);
 
@@ -834,6 +851,10 @@ bool Gif::write(const QString &fileName,
         }
     } else {
         qDebug() << "Count of PNG files and delays are not the same, or list of files is empty.";
+    }
+
+    if (promise) {
+        promise->addResult(false);
     }
 
     return false;
