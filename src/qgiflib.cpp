@@ -2,6 +2,10 @@
 /*
     SPDX-FileCopyrightText: 2026 Igor Mironchik <igor.mironchik@gmail.com>
     SPDX-License-Identifier: MIT
+
+    Quantization algorithm was written by description in this article
+    https://habr.com/en/articles/315490/
+    with some modifications.
 */
 
 // qgiflib include.
