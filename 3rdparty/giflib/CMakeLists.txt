@@ -19,4 +19,4 @@ set(SRC gif_hash.h
     gifalloc.c
     openbsd-reallocarray.c)
 
-add_library(giflib ${SRC})
+add_library(giflib STATIC ${SRC})
