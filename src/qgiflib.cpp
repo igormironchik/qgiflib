@@ -67,29 +67,29 @@ longestSide(const QMap<Color,
     ColorRange green = {s.firstKey().green, 0};
     ColorRange blue = {s.firstKey().blue, 0};
 
-    for (const auto &k : s.keys()) {
-        if (k.red < red.lowest) {
-            red.lowest = k.red;
+    for (auto it = s.constBegin(), last = s.constEnd(); it != last; ++it) {
+        if (it.key().red < red.lowest) {
+            red.lowest = it.key().red;
         }
 
-        if (k.red > red.highest) {
-            red.highest = k.red;
+        if (it.key().red > red.highest) {
+            red.highest = it.key().red;
         }
 
-        if (k.green < green.lowest) {
-            green.lowest = k.green;
+        if (it.key().green < green.lowest) {
+            green.lowest = it.key().green;
         }
 
-        if (k.green > green.highest) {
-            green.highest = k.green;
+        if (it.key().green > green.highest) {
+            green.highest = it.key().green;
         }
 
-        if (k.blue < blue.lowest) {
-            blue.lowest = k.blue;
+        if (it.key().blue < blue.lowest) {
+            blue.lowest = it.key().blue;
         }
 
-        if (k.blue > blue.highest) {
-            blue.highest = k.blue;
+        if (it.key().blue > blue.highest) {
+            blue.highest = it.key().blue;
         }
     }
 

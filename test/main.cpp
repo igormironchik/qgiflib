@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     t.setInterval(gif.count() ? gif.delay(0) : 1000);
 
     if (gif.count()) {
-        QObject::connect(&t, &QTimer::timeout, [&]() {
+        QObject::connect(&t, &QTimer::timeout, &l, [&]() {
             static int i = 0;
 
             ++i;
