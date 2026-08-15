@@ -20,6 +20,6 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/giflib)
 
-add_library(qgiflib qgiflib.hpp qgiflib.cpp)
+add_library(qgiflib STATIC qgiflib.hpp qgiflib.cpp)
 
 target_link_libraries(qgiflib giflib ${ImageMagick_LIBRARIES} Qt6::Gui Qt6::Core)
