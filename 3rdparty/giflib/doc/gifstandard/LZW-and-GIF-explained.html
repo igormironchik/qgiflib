@@ -19,7 +19,7 @@ document:</p>
 <li>
       <strong>character</strong>: a fundamental data element. In normal text files, this is
 just a single byte. In raster images, which is what we're interested in, it's
-an index that specifies the color of a given pixel. I'll refer to an arbitray
+an index that specifies the color of a given pixel. I'll refer to an arbitrary
 character as "K".
 </li><li>
       <strong>charstream</strong>: a stream of characters, as in a data file.
@@ -203,7 +203,7 @@ is in the table, as the code just added. So it will output the code
 for P[...]P if it finds that P[...]PQ is not in the table.  The
 decompressor is always "one step behind" the compressor. When the
 decompressor sees the code for P[...]P, it will not have added that
-code to it's string table yet because it needed the beginning
+code to its string table yet because it needed the beginning
 character of P[...]P to add to the string for the last code, P[...],
 to form the code for P[...]P. However, when a decompressor finds a
 code that it doesn't know yet, it will always be the very next one to
@@ -302,7 +302,7 @@ must increase your compression size AS SOON AS YOU write entry
 READ will be one bit longer. Don't make the mistake of waiting until
 you need to add the code (2**compression size) to the table. You'll
 have already missed a bit from the last code.  The packaging of codes
-into a bitsream for the raster data is also a potential stumbling
+into a bitstream for the raster data is also a potential stumbling
 block for the novice encoder or decoder. The lowest order bit in the
 code should coincide with the lowest available bit in the first
 available byte in the codestream. For example, if you're starting with

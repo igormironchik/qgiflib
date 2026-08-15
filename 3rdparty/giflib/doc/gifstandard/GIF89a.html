@@ -28,7 +28,7 @@ You can also read <a href="gif89.txt">the original flat text.</a>
 
 <hr>
 
-<p>© 1987, 1988, 1989, 1990</p>
+<p>&copy; 1987, 1988, 1989, 1990</p>
 
 <p>Copyright<br>
 CompuServe Incorporated<br>
@@ -115,11 +115,11 @@ makes no claim as to the suitability of the information.</p>
 
 <div id="p2">
 
-<p>This document defines the Graphics Interchange Format℠. The
+<p>This document defines the Graphics Interchange Format&#2120;. The
 specification given here defines version 89a, which is an extension of version
 87a.</p>
 
-<p>The Graphics Interchange Format℠ as specified here should be
+<p>The Graphics Interchange Format&#2120; as specified here should be
 considered complete; any deviation from it should be considered invalid,
 including but not limited to, the use of reserved or undefined fields within
 control or data blocks, the inclusion of extraneous data within or between
@@ -134,14 +134,14 @@ format and should be avoided.</p>
 
 <div id="p3">
 
-<p>The Graphics Interchange Format© is the copyright property of
+<p>The Graphics Interchange Format&copy; is the copyright property of
 CompuServe Incorporated. Only CompuServe Incorporated is authorized to define,
 redefine, enhance, alter, modify or change in any way the definition of the
 format.</p>
 
 <p>CompuServe Incorporated hereby grants a limited, non-exclusive, royalty-free
-license for the use of the Graphics Interchange Format℠ in computer
-software; computer software utilizing GIF℠ must acknowledge ownership of
+license for the use of the Graphics Interchange Format&#2120; in computer
+software; computer software utilizing GIF&#2120; must acknowledge ownership of
 the Graphics Interchange Format and its Service Mark by CompuServe
 Incorporated, in User and Technical Documentation. Computer software utilizing
 GIF, which is distributed or may be distributed without User or Technical
@@ -152,8 +152,8 @@ screen or leading banner, or a closing screen or trailing banner. A message
 such as the following may be used:</p>
 
 <blockquote>
-	<p><i>The Graphics Interchange Format© is the Copyright property of
-	CompuServe Incorporated. GIF℠ is a Service Mark property of
+	<p><i>The Graphics Interchange Format&copy; is the Copyright property of
+	CompuServe Incorporated. GIF&#2120; is a Service Mark property of
 	CompuServe Incorporated.</i></p>
 </blockquote>
 
@@ -199,7 +199,7 @@ significant bits.</p>
 
 <div id="p5">
 
-<p>The Graphics Interchange Format℠ defines a protocol intended for the
+<p>The Graphics Interchange Format&#2120; defines a protocol intended for the
 on-line transmission and interchange of raster graphic data in a way that is
 independent of the hardware used in their creation or display.</p>
 
@@ -394,12 +394,12 @@ extensions are used as scope delimiters for Control blocks and extensions.</p>
 <p>The labels used to identify labeled blocks fall into three ranges:</p>
 
 <ul>
-	<li><tt>0x00</tt>–<tt>0x7F</tt> (0–127) are the Graphic
+	<li><tt>0x00</tt>&ndash;<tt>0x7F</tt> (0&ndash;127) are the Graphic
 	Rendering blocks, excluding the <a href="#trailer">Trailer</a>
 	(<tt>0x3B</tt>, 59)
-	</li><li><tt>0x80</tt>–<tt>0xF9</tt> (128–249) are the Control
+	</li><li><tt>0x80</tt>&ndash;<tt>0xF9</tt> (128&ndash;249) are the Control
 	blocks
-	</li><li><tt>0xFA</tt>–<tt>0xFF</tt> (250–255) are the Special
+	</li><li><tt>0xFA</tt>&ndash;<tt>0xFF</tt> (250&ndash;255) are the Special
 	Purpose blocks
 </li></ul>
 
@@ -477,7 +477,7 @@ therefore, the empty sub-block is one whose size field contains <tt>0x00</tt>
 	</td></tr><tr>
 		<td style="text-align:center;">3
 	</td></tr><tr>
-		<td style="text-align:center;">⋮
+		<td style="text-align:center;">&#x22ee;
 	</td></tr><tr>
 		<td style="text-align:center;">up to 255
 </td></tr></tbody></table>
@@ -611,12 +611,12 @@ must appear at the beginning of every Data Stream.</p>
 		contents of the Data Stream.
 		</li><li>Version Numbers as of 10 July 1990:
 		<ul>
-			<li><tt>"87a"</tt> (<tt>0x38 0x37 0x61</tt>) – May 1987
-			</li><li><tt>"89a"</tt> (<tt>0x38 0x39 0x61</tt>) – July 1989
+			<li><tt>"87a"</tt> (<tt>0x38 0x37 0x61</tt>) &ndash; May 1987
+			</li><li><tt>"89a"</tt> (<tt>0x38 0x39 0x61</tt>) &ndash; July 1989
 		</li></ul>
 		</li><li>Version numbers are ordered numerically increasing on the first two
-		digits starting with 87 (87, 88, …, 99, 00, …, 85, 86)
-		and alphabetically increasing on the third character (a, …, z).
+		digits starting with 87 (87, 88, &hellip;, 99, 00, &hellip;, 85, 86)
+		and alphabetically increasing on the third character (a, &hellip;, z).
 	</li></ul>
 	</li><li>Extensions and Scope:
 	<ul>
@@ -824,7 +824,7 @@ must appear immediately after the <a href="#header">Header</a>.</p>
 		</li><li>Values:
 		<ul>
 			<li>0: No aspect ratio information is given.
-			</li><li>1…255: Value used in the computation.
+			</li><li>1&hellip;255: Value used in the computation.
 		</li></ul>
 	</li></ul>
 </li></ol>
@@ -854,7 +854,7 @@ immediately follows the Logical Screen Descriptor and contains a number of
 bytes equal to:</p>
 
 <blockquote>
-	<p>3 × 2<sup>Size of Global Color Table + 1</sup></p>
+	<p>3 &tumes; 2<sup>Size of Global Color Table + 1</sup></p>
 </blockquote>
 
 <p>This block is <i>optional</i>; at most one Global Color Table may be present
@@ -1121,7 +1121,7 @@ present, the Local Color Table immediately follows the Image Descriptor and
 contains a number of bytes equal to:</p>
 
 <blockquote>
-	<p>3 × 2<sup>Size of Local Color Table + 1</sup></p>
+	<p>3 &tumes; 2<sup>Size of Local Color Table + 1</sup></p>
 </blockquote>
 
 <p>If present, this color table temporarily becomes the active color table and
@@ -1387,7 +1387,7 @@ Graphic Control Extensions that may be contained in a Data Stream.</p>
 			must be restored to the background color.
 			</li><li>3: Restore to previous. The decoder is required to restore the
 			area overwritten by the graphic with what was there prior to rendering the graphic.
-			</li><li>4–7: To be defined.
+			</li><li>4&ndash;7: To be defined.
 		</li></ul>
 	</li></ul>
 	</li><li>User Input Flag:
@@ -1798,7 +1798,7 @@ encountered, it is recommended that the decoder display a Space character
 (<tt>0x20</tt>, 32). The encoder should use grid and cell dimensions such that
 an integral number of cells fit in the grid both horizontally as well as
 vertically. For broadest compatibility, character cell dimensions should be
-around 8×8 or 8×16 (width × height); consider an image for
+around 8&tumes;8 or 8&tumes;16 (width &tumes; height); consider an image for
 unusual sized text.</p>
 
 <p><i>Editor's (Kalle's) note: the upper limit for a printable character,
@@ -1850,11 +1850,11 @@ label is <tt>0xFF</tt> (255).</p>
 		</td><td>Block Size
 		</td><td>Byte
 	</td></tr><tr>
-		<td style="text-align:center;">1…8
+		<td style="text-align:center;">1&hellip;8
 		</td><td>Application Identifier
 		</td><td>8 Bytes
 	</td></tr><tr>
-		<td style="text-align:center;">9…11
+		<td style="text-align:center;">9&hellip;11
 		</td><td>Application Authentication Code
 		</td><td>3 Bytes
 </td></tr></tbody></table>
@@ -2486,13 +2486,13 @@ or stored character stream involves several steps. In brief these steps
 are:</p>
 
 <ol>
-	<li>Establish the Code Size – Define the number of bits needed to
+	<li>Establish the Code Size &ndash; Define the number of bits needed to
 	represent the actual data.
-	</li><li>Compress the Data – Compress the series of image pixels to a
+	</li><li>Compress the Data &ndash; Compress the series of image pixels to a
 	series of compression codes.
-	</li><li>Build a Series of Bytes – Take the set of compression codes and
+	</li><li>Build a Series of Bytes &ndash; Take the set of compression codes and
 	convert to a string of 8-bit bytes.
-	</li><li>Package the Bytes – Package sets of bytes into blocks preceded by
+	</li><li>Package the Bytes &ndash; Package sets of bytes into blocks preceded by
 	character counts and output.
 </li></ol>
 
@@ -2603,8 +2603,8 @@ the data.</p>
 	1989
 </li></ol>
 
-<p><i>Editor's (Kalle's) note: see also <a href="https://web.archive.org/web/20160304075538/http://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch">Wikipedia –
-Lempel–Ziv–Welch</a>.</i></p>
+<p><i>Editor's (Kalle's) note: see also <a href="https://web.archive.org/web/20160304075538/http://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch">Wikipedia &ndash;
+Lempel&ndash;Ziv&ndash;Welch</a>.</i></p>
 
 </div>
 
@@ -2658,7 +2658,7 @@ printers as well as a monitor screen. The general format of this message
 is:</p>
 
 <p>#version;protocol{;dev, width, height, color-bits,
-color-res}…&lt;CR&gt;</p>
+color-res}&hellip;&lt;CR&gt;</p>
 
 <table>
 	<tbody><tr>
@@ -2801,7 +2801,7 @@ of their clients before the decoders start "breaking" on the new GIF's. It is
 not required that encoders change their software to take advantage of the
 deferred clear code, but it is for decoders.</p>
 
-<h3>Application Extension Block – Application Identifier</h3>
+<h3>Application Extension Block &ndash; Application Identifier</h3>
 
 <p>There will be a Courtesy Directory file located on CompuServe in the PICS
 forum. This directory will contain Application Identifiers for <a href="#applicationextension">Application Extension Blocks</a> that have been

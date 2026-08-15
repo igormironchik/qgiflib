@@ -34,9 +34,11 @@
 
 <para>A program to convert a series of editable text GIF icon specifications and
 named GIF files into a multi-image GIF, usable as a graphic resource file.
-It can also dump existing GIFs in this format.  When dumping a GIF,
-certain sanity checks are performed which may result in a warning
-emitted to standard error.</para>
+It can also dump existing GIFs in this format. Both directions are
+lossless and mutually inverse.</para>
+
+<para>When dumping a GIF, certain sanity checks are performed which
+may result in a warning emitted to standard error.</para>
 
 <para>If no GIF file is given, gifbuild will try to read a text input
 from stdin.</para>
@@ -96,7 +98,7 @@ required newline.</para>
 aren't obvious to you, what are you doing with this software?</para>
 
 <para>The <quote>pixel aspect byte</quote> declaration sets an integer 
-denominator for a fraction expressing the puxel aspect ratio.  See the
+denominator for a fraction expressing the pixel aspect ratio.  See the
 GIF standard for details; this field is actually long obsolete.</para>
 
 <para>A color table declares color indices (in ascending order from 0)
@@ -118,7 +120,7 @@ declaration that leads it. Raster blocks from interlaced GIFs are
 dumped with the lines in non-interlaced order.</para>
 
 <para>The <quote>comment</quote>, <quote>plaintext</quote> or
-<quote>ggraphics control</quote> keywords lead defined GIF89 extension
+<quote>graphics control</quote> keywords lead defined GIF89 extension
 record data. The final GIF89 type, graphics control and application
 block, are not yet supported, but the code does recognize a Netscape
 loop block.  You can also say <quote>extension</quote> followed by a

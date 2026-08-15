@@ -14,3 +14,9 @@ path = "3rdparty/giflib/**"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "1997  Eric S. Raymond"
 SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "3rdparty/giflib/CMakeLists.txt"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Igor Mironchik <igor.mironchik@gmail.com>"
+SPDX-License-Identifier = "MIT"
